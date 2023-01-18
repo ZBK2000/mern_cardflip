@@ -1,32 +1,51 @@
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
+import {  Link } from "react-router-dom";
+import { deleteDeck } from './assets/api/deleteDeck';
+import { getDecks, TDeck } from './assets/api/getDecks';
+import { createDeck } from './assets/api/createDeck';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [decks, setDecks] = useState<TDeck[]>([])
+  const [title, setTitle] = useState("")
+
+  async function handleCreateDeck (e: React.FormEvent){
+    e.preventDefault()
+
+  const deck = await createDeck(title)
+  setDecks([...decks, deck])
+  setTitle("")
+  }
+
+async function handleDeleteDeck(deckId:string) {
+await deleteDeck(deckId)
+setDecks(decks.filter((deck)=> deck._id !== deckId))}
+
+
+useEffect(()=> {
+  async function fetchDecks (){
+    
+   
+   const newDecks = await getDecks() 
+   setDecks(newDecks)}
+   fetchDecks()
+})
 
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <ul className="decks">
+        {decks.map((deck)=> (<li key={deck._id}>
+        <button onClick={() =>handleDeleteDeck(deck._id)}>X</button>
+        <Link to={`decks/${deck._id}`}>{deck.title}</Link>
+        </li>))}
+      </ul>
+      <form onSubmit={handleCreateDeck}>
+        <label htmlFor="deck-title">Deck Title</label>
+        <input id="deck-title" value={title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setTitle(e.target.value)}}/>
+        <button>Create Deck</button>
+      </form>
+     
     </div>
   )
 }
