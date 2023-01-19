@@ -8,7 +8,7 @@ import { createDeck } from './assets/api/createDeck';
 
 function App() {
   const [decks, setDecks] = useState<TDeck[]>([])
-  const [title, setTitle] = useState("")
+  const [title, setTitle] = useState("") 
 
   async function handleCreateDeck (e: React.FormEvent){
     e.preventDefault()
@@ -34,6 +34,7 @@ useEffect(()=> {
 
   return (
     <div className="App">
+      <h1>Your decks</h1>
       <ul className="decks">
         {decks.map((deck)=> (<li key={deck._id}>
         <button onClick={() =>handleDeleteDeck(deck._id)}>X</button>
